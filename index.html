@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Lời mời kỷ yếu 💌</title>
+    <link href="https://fonts.googleapis.com/css2?family=Pacifico&family=Poppins:wght@400;600&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="./style/style.css">
+
+    <!-- Bóng cho bức thư -->
+    <style>
+      /* cơ bản cho bức thư: bóng, bo góc, và shadow inset nhẹ */
+      #envelope .letter {
+        background: linear-gradient(180deg, #ffffff 0%, #faf7f7 100%);
+        border-radius: 8px;
+        box-shadow:
+          0 30px 60px rgba(0,0,0,0.35),   /* bóng mềm lớn */
+          0 8px 18px rgba(0,0,0,0.2),     /* bóng trung bình */
+          inset 0 -3px 10px rgba(0,0,0,0.04); /* bóng trong nhẹ phía dưới */
+        transition: transform 260ms ease, box-shadow 260ms ease;
+        position: relative;
+        z-index: 2;
+      }
+
+      /* khi phong bì mở: nâng bức thư để bóng sâu hơn */
+      #envelope.open .letter,
+      #envelope.open .letter.show {
+        transform: translateY(-8px);
+        box-shadow:
+          0 46px 90px rgba(0,0,0,0.45),
+          0 12px 30px rgba(0,0,0,0.25),
+          inset 0 -4px 14px rgba(0,0,0,0.05);
+      }
+
+      /* thêm bóng mềm phía dưới phong bì để cảm giác nổi */
+      .envlope-wrapper::after {
+        content: "";
+        position: absolute;
+        left: 50%;
+        transform: translateX(-50%);
+        bottom: 18px;
+        width: 65%;
+        height: 40px;
+        background: radial-gradient(ellipse at center, rgba(0,0,0,0.28), rgba(0,0,0,0.08) 60%, transparent 70%);
+        filter: blur(10px);
+        z-index: 0;
+        pointer-events: none;
+      }
+
+      /* đảm bảo yếu tố con không bị che bởi pseudo-element */
+      .envlope-wrapper { position: relative; z-index: 1; }
+    </style>
+</head>
+<body>
+    <div class="envlope-wrapper">
+        <div id="envelope" class="close">
+            <div class="wax-seal"></div>
+            <div class="front flap"></div>
+            <div class="front pocket"></div>
+            <div class="letter">
+                <div class="letter-corner corner-tl"></div>
+                <div class="letter-corner corner-br"></div>
+                <div class="message">
+                    <div class="lyrics">
+                    </div>
+                </div>
+            </div>
+            <div class="hearts">
+                <div class="heart a1"></div>
+                <div class="heart a2"></div>
+                <div class="heart a3"></div>
+            </div>
+            <div class="sparkles">
+                <div class="sparkle s1"></div>
+                <div class="sparkle s2"></div>
+                <div class="sparkle s3"></div>
+            </div>
+        </div>
+    </div>
+    <div class="controls">
+        <button id="openBtn">Mở</button>
+        <button id="resetBtn" style="display: none;">Đóng</button>
+    </div>
+    <audio id="sound" loop>
+      <source src="./style/Có Đôi Điều.mp3" type="audio/mpeg" />
+    </audio>
+
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="./style/script.js"></script>
+
+    <!-- Thêm: thư mời kỉ yếu + style + script -->
+    <style>
+      .invitation {
+        display: flex;
+        position: fixed;
+        inset: 0;
+        background: rgba(0,0,0,0.6);
+        align-items: center;
+        justify-content: center;
+        z-index: 9999;
+        padding: 20px;
+        opacity: 0;
+        pointer-events: none;
+        transition: opacity 260ms ease;
+      }
+      .invitation.show {
+        opacity: 1;
+        pointer-events: auto;
+      }
+
+      .invitation-card {
+        width: 90%;
+        max-width: 720px;
+        background: #fff;
+        border-radius: 10px;
+        padding: 28px;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+        font-family: "Poppins", sans-serif;
+        color: #222;
+        transform: translateY(18px) scale(0.98);
+        opacity: 0;
+        transition: transform 360ms cubic-bezier(.2,.9,.3,1), opacity 360ms ease;
+      }
+      .invitation.show .invitation-card {
+        transform: translateY(0) scale(1);
+        opacity: 1;
+      }
+
+      .invitation-card h1 {
+        margin: 0 0 12px;
+        font-family: "Pacifico", cursive;
+        color: #B30000;
+        font-size: 34px;
+      }
+      .invitation-card p {
+        margin: 8px 0;
+        line-height: 1.45;
+        opacity: 0;
+        transform: translateY(8px);
+        transition: transform 280ms ease, opacity 280ms ease;
+      }
+      .invitation-card p.reveal {
+        opacity: 1;
+        transform: translateY(0);
+      }
+
+      .invitation-actions {
+        margin-top: 16px;
+        text-align: right;
+      }
+      .invitation-actions button {
+        background: #B30000;
+        color: #fff;
+        border: none;
+        padding: 8px 14px;
+        border-radius: 6px;
+        cursor: pointer;
+      }
+      @media (max-width:420px){
+        .invitation-card { padding: 18px; }
+        .invitation-card h1 { font-size: 26px; }
+      }
+    </style>
+
+    <div id="invitation" class="invitation" aria-hidden="true">
+      <div class="invitation-card" role="dialog" aria-modal="true" aria-labelledby="invite-title">
+        <h1 id="invite-title">Thư mời Kỉ yếu</h1>
+        <p>dear beauty,</p>
+        <p>Mình rất vui khi bạn đã dành thời gian quý báu của bản thân để đọc lá thư nho nhỏ này, sắp tới sẽ là buổi lễ chụp kỷ yếu cuối cấp của mình cũng là ngày sinh nhật của bản thân mình nên mình thực sự muốn mời bạn tới dự.</p>
+        <p><strong>Thời gian:</strong> 09:30, Thứ 7, ngày 21/02/2026</p>
+        <p><strong>Địa điểm:</strong> Trường THPT Nguyễn Trãi</p>
+        <p>Tớ rất mong bạn đến đúng giờ để cùng nhau chụp ảnh lưu niệm. Hẹn gặp bạn tại buổi kỷ yếu!</p>
+        <div class="invitation-actions">
+          <button id="closeInvitationBtn">Đóng</button>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      // Hiển thị thư mời khi bấm nút Mở; giữ nhạc đang chạy; reveal từng dòng
+      (function(){
+        const openBtn = document.getElementById('openBtn');
+        const resetBtn = document.getElementById('resetBtn');
+        const invitation = document.getElementById('invitation');
+        const closeInvitationBtn = document.getElementById('closeInvitationBtn');
+        const audio = document.getElementById('sound');
+
+        function revealLines() {
+          const paras = invitation.querySelectorAll('.invitation-card p');
+          paras.forEach((p, i) => {
+            p.classList.remove('reveal');
+            setTimeout(() => p.classList.add('reveal'), 120 * i + 120);
+          });
+        }
+
+        function clearReveals() {
+          const paras = invitation.querySelectorAll('.invitation-card p');
+          paras.forEach(p => p.classList.remove('reveal'));
+        }
+
+        function showInvitation() {
+          // bật audio nếu chưa chạy, nhưng không dừng nếu đang chạy
+          if (audio && audio.paused) {
+            audio.play().catch(()=>{});
+          }
+          invitation.classList.add('show');
+          invitation.setAttribute('aria-hidden', 'false');
+          // reveal nội dung từng dòng
+          revealLines();
+          // hiển thị nút Đóng (reset)
+          if (resetBtn) resetBtn.style.display = '';
+        }
+
+        function hideInvitation() {
+          invitation.classList.remove('show');
+          invitation.setAttribute('aria-hidden', 'true');
+          clearReveals();
+          // giữ nhạc chạy (không dừng)
+          if (resetBtn) resetBtn.style.display = 'none';
+        }
+
+        openBtn && openBtn.addEventListener('click', function(){
+          // nếu cần đợi hoạt ảnh phong bì hiện có, giữ thời gian ngắn
+          setTimeout(showInvitation, 600);
+        });
+
+        resetBtn && resetBtn.addEventListener('click', function(){
+          hideInvitation();
+        });
+
+        closeInvitationBtn && closeInvitationBtn.addEventListener('click', function(){
+          hideInvitation();
+        });
+
+        // ẩn khi click ngoài thẻ thư mời
+        invitation && invitation.addEventListener('click', function(e){
+          if (e.target === invitation) hideInvitation();
+        });
+
+        // nếu muốn, khi trang load tự play (bỏ comment nếu muốn)
+        // window.addEventListener('load', () => { audio && audio.play().catch(()=>{}); });
+      })();
+    </script>
+</body>
+</html>
